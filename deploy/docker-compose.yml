@@ -1,0 +1,91 @@
+# Seven containers, five networks. This file is the only place that knows the
+# whole system exists. Every image is pulled, never built, so what runs on the
+# server is exactly what CI produced.
+
+name: opslab
+
+secrets:
+  db_password: { file: ../secrets/db_password }
+
+networks:
+  edge: {}                 # gateway <- host loopback
+  app:  { internal: true } # gateway <-> the four services
+  data: { internal: true } # api <-> db only
+  egress: { internal: true } # api <-> proxy only
+  wan: {}                  # proxy -> the internet
+
+x-hardened: &hardened
+  restart: unless-stopped
+  read_only: true
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  labels: { com.centurylinklabs.watchtower.enable: "false" }
+
+x-nginx: &nginx
+  <<: *hardened
+  user: "101:101"
+  tmpfs: ["/tmp:size=8m", "/var/cache/nginx:size=16m,uid=101", "/var/run:size=1m,uid=101"]
+  networks: [app]
+  mem_limit: 64m
+
+services:
+  gateway:
+    <<: *nginx
+    image: ${GATEWAY_IMAGE}
+    networks: [edge, app]
+    ports: ["127.0.0.1:8088:8080"]
+    depends_on: [fleet-shell, dispatch-lab, triage-bench, api]
+
+  fleet-shell:   { <<: *nginx, image: "${FLEET_SHELL_IMAGE}" }
+  dispatch-lab:  { <<: *nginx, image: "${DISPATCH_LAB_IMAGE}" }
+  triage-bench:  { <<: *nginx, image: "${TRIAGE_BENCH_IMAGE}" }
+
+  api:
+    <<: *hardened
+    image: ${API_IMAGE}
+    tmpfs: ["/tmp:size=16m"]
+    networks: [app, data, egress]
+    secrets: [db_password]
+    environment:
+      DB_HOST: db
+      DB_NAME: opslab
+      DB_USER: opslab
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      HTTPS_PROXY: http://proxy:8888
+      NO_PROXY: db,localhost,127.0.0.1
+    depends_on: { db: { condition: service_healthy } }
+    mem_limit: 256m
+
+  db:
+    image: postgres:16.9-alpine
+    restart: unless-stopped
+    cap_drop: ["ALL"]
+    cap_add: ["CHOWN","DAC_OVERRIDE","FOWNER","SETGID","SETUID"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [data]
+    secrets: [db_password]
+    environment:
+      POSTGRES_DB: opslab
+      POSTGRES_USER: opslab
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opslab -d opslab"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    mem_limit: 256m
+    labels: { com.centurylinklabs.watchtower.enable: "false" }
+
+  proxy:
+    <<: *hardened
+    build: { context: ../proxy }
+    image: ${PROXY_IMAGE:-opslab-proxy:local}
+    tmpfs: ["/var/run/tinyproxy:uid=100"]
+    networks: [egress, wan]
+    mem_limit: 64m
+
+volumes:
+  pgdata:

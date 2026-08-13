@@ -1,0 +1,29 @@
+.page{max-width:940px;margin:0 auto;padding:56px 24px 80px}
+header{display:flex;gap:20px;align-items:flex-start;margin-bottom:36px}
+.mark{font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--bg);
+  background:var(--brass);padding:6px 9px;border-radius:2px;margin-top:4px}
+header h1{font-size:34px;line-height:1}
+header p{margin:10px 0 0;color:var(--dim);font-size:14.5px;max-width:56ch;line-height:1.6}
+
+.manifest{border:1px solid var(--line);border-radius:2px;background:var(--bg2);padding:6px 16px;margin-bottom:40px}
+.manifest .row{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);font-size:12px;
+  padding:9px 0;border-bottom:1px dotted var(--line)}
+.manifest .row:last-child{border-bottom:0}
+.manifest span{color:var(--dim);letter-spacing:.05em;text-transform:uppercase;font-size:11px}
+.manifest b{font-weight:500;text-align:right;word-break:break-all}
+.manifest b.ok{color:var(--ok)}
+
+main{display:grid;gap:14px}
+.card{display:block;border:1px solid var(--line);border-radius:2px;padding:22px;text-decoration:none;
+  color:inherit;background:var(--bg2);transition:border-color .18s,transform .18s}
+.card:hover{border-color:var(--brass);transform:translateX(3px)}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--brass)}
+.card h2{font-size:21px;margin:8px 0 9px}
+.card p{margin:0;color:var(--dim);font-size:13.5px;line-height:1.65;max-width:70ch}
+.go{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line2);padding-bottom:2px}
+.card:hover .go{color:var(--brass);border-color:var(--brass)}
+
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line)}
+footer p{margin:0;color:var(--dim);font-size:12px;font-family:var(--mono);line-height:1.7}
+@media(max-width:620px){header h1{font-size:26px}.page{padding:32px 18px 60px}}

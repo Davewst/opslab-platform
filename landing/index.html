@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OPSLAB Sandbox</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="mark">OPSLAB</div>
+    <div>
+      <h1>Sandbox</h1>
+      <p>Rehearsal environments for pipeline, host, and evidence work. No real systems are reachable from here.</p>
+    </div>
+  </header>
+
+  <div class="manifest" id="manifest">
+    <div class="row"><span>version</span><b id="m-ver">—</b></div>
+    <div class="row"><span>commit</span><b id="m-sha">—</b></div>
+    <div class="row"><span>built</span><b id="m-time">—</b></div>
+    <div class="row"><span>base image</span><b id="m-base">—</b></div>
+    <div class="row"><span>api</span><b id="m-api">checking…</b></div>
+    <div class="row"><span>egress</span><b>outbound allowed only through the proxy allowlist</b></div>
+  </div>
+
+  <main>
+    <a class="card" href="/fleet-shell/">
+      <span class="tag">host operations</span>
+      <h2>Fleet Shell</h2>
+      <p>Two simulated Linux hosts with containers, systemd units, and runner installs. Every command is graded read-only, reversible, or irreversible, and destructive ones are refused without an open approval scoped to that host and environment.</p>
+      <span class="go">Open</span>
+    </a>
+    <a class="card" href="/dispatch-lab/">
+      <span class="tag">ci/cd architecture</span>
+      <h2>Dispatch Lab</h2>
+      <p>Base image fan-out to eighteen consumer repositories. Change the wiring &mdash; job ordering, token type, digest pinning, concurrency &mdash; and watch which consumers end up building against a stale layer.</p>
+      <span class="go">Open</span>
+    </a>
+    <a class="card" href="/triage-bench/">
+      <span class="tag">vulnerability evidence</span>
+      <h2>Triage Bench</h2>
+      <p>A scan of ten findings, each belonging to exactly one remediation lane. Sort them, argue with the ones that resist sorting, and watch a POA&amp;M assemble itself with deterministic identifiers.</p>
+      <span class="go">Open</span>
+    </a>
+  </main>
+
+  <footer>
+    <p>Static content only. No backend, no database, no credentials, no outbound requests. The container serves eight files and a font directory.</p>
+  </footer>
+</div>
+<script src="app.js" defer></script>
+</body>
+</html>
