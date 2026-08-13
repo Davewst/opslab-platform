@@ -20,17 +20,17 @@ jobs:
       - uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
       - name: Verify the signature before trusting the digest
         run: |
-          OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr 'A-Z' 'a-z')
+          Davewst=$(echo "$GITHUB_REPOSITORY_Davewst" | tr 'A-Z' 'a-z')
           APP="${{ github.event.client_payload.app }}"
-          cosign verify "ghcr.io/$OWNER/opslab-$APP@${{ github.event.client_payload.digest }}" \
-            --certificate-identity-regexp "^https://github.com/$OWNER/opslab-$APP/" \
+          cosign verify "ghcr.io/$Davewst/opslab-$APP@${{ github.event.client_payload.digest }}" \
+            --certificate-identity-regexp "^https://github.com/$Davewst/opslab-$APP/" \
             --certificate-oidc-issuer https://token.actions.githubusercontent.com
       - name: Pin it
         run: |
-          OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr 'A-Z' 'a-z')
+          Davewst=$(echo "$GITHUB_REPOSITORY_Davewst" | tr 'A-Z' 'a-z')
           APP="${{ github.event.client_payload.app }}"
           KEY=$(echo "$APP" | tr 'a-z-' 'A-Z_')_IMAGE
-          sed -i "s|^${KEY}=.*|${KEY}=ghcr.io/$OWNER/opslab-$APP@${{ github.event.client_payload.digest }}|" images.env
+          sed -i "s|^${KEY}=.*|${KEY}=ghcr.io/$Davewst/opslab-$APP@${{ github.event.client_payload.digest }}|" images.env
           git config user.name  "opslab-bot"
           git config user.email "opslab-bot@users.noreply.github.com"
           git commit -am "pin $APP to ${{ github.event.client_payload.digest }}" || exit 0

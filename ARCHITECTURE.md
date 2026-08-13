@@ -14,12 +14,12 @@ it fail.
 | Repository | Produces | Knows about |
 |---|---|---|
 | `opslab-shared` | nothing — actions and assets only | nothing |
-| `opslab-base` | `ghcr.io/OWNER/opslab-base` | opslab-shared, and the 3 app repos it notifies |
-| `opslab-fleet-shell` | `ghcr.io/OWNER/opslab-fleet-shell` | opslab-shared, opslab-platform |
-| `opslab-dispatch-lab` | `ghcr.io/OWNER/opslab-dispatch-lab` | same |
-| `opslab-triage-bench` | `ghcr.io/OWNER/opslab-triage-bench` | same |
-| `opslab-api` | `ghcr.io/OWNER/opslab-api` | opslab-shared, opslab-platform |
-| `opslab-platform` | `ghcr.io/OWNER/opslab-platform` (gateway) + the compose stack | everything, and the server |
+| `opslab-base` | `ghcr.io/Davewst/opslab-base` | opslab-shared, and the 3 app repos it notifies |
+| `opslab-fleet-shell` | `ghcr.io/Davewst/opslab-fleet-shell` | opslab-shared, opslab-platform |
+| `opslab-dispatch-lab` | `ghcr.io/Davewst/opslab-dispatch-lab` | same |
+| `opslab-triage-bench` | `ghcr.io/Davewst/opslab-triage-bench` | same |
+| `opslab-api` | `ghcr.io/Davewst/opslab-api` | opslab-shared, opslab-platform |
+| `opslab-platform` | `ghcr.io/Davewst/opslab-platform` (gateway) + the compose stack | everything, and the server |
 
 The important asymmetry: **`opslab-shared` knows about nobody, `opslab-platform`
 knows about everybody.** Dependencies point in one direction. Nothing in the
@@ -34,7 +34,7 @@ definitions, no build steps, and no scan policy.
 
 All of that is inherited: the design system and nginx config come down through
 `FROM opslab-base`, and the build and scan steps come in through
-`uses: OWNER/opslab-shared/.github/workflows/app-pipeline.yml@v1`.
+`uses: Davewst/opslab-shared/.github/workflows/app-pipeline.yml@v1`.
 
 That means a change to the scan severity is one edit in one file, and all four
 image repos pick it up on their next build. That property is the whole reason to
@@ -61,7 +61,7 @@ control, which is the harder and more valuable skill.
   ┌─────────────────────┐
   │    opslab-base      │  FROM nginx-unprivileged
   │                     │  + shared/ assets, + nginx.conf, + headers
-  └──────────┬──────────┘  push → ghcr.io/OWNER/opslab-base
+  └──────────┬──────────┘  push → ghcr.io/Davewst/opslab-base
              │
              │  needs: build-and-push          ◄── the ordering rule
              │  repository_dispatch(base-image-updated, digest)
@@ -198,9 +198,9 @@ megabytes. If an attacker gets code execution in one of these containers they
 cannot write a binary to disk, cannot escalate through a setuid file, and cannot
 persist across a restart.
 
-`db` is the one exception. Postgres's entrypoint starts as root to fix ownership
+`db` is the one exception. Postgres's entrypoint starts as root to fix Davewstship
 on the data directory and then drops privileges itself, so it needs five
-capabilities back: `CHOWN`, `DAC_OVERRIDE`, `FOWNER`, `SETGID`, `SETUID`. Know
+capabilities back: `CHOWN`, `DAC_OVERRIDE`, `FDavewst`, `SETGID`, `SETUID`. Know
 this before you try to lock it down, or you will spend an evening on a container
 that will not boot.
 
